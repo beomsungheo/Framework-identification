@@ -1,0 +1,30 @@
+services:
+  crawler:
+    build: .
+    container_name: framework-crawler
+    # SSH 터널링을 위해 호스트 네트워크 사용
+    # 호스트에서 SSH 터널을 열어야 함:
+    # ssh -p 7001 -L 11435:localhost:11434 mincoding@119.195.211.150
+    network_mode: "host"
+    
+    # 볼륨 마운트 (데이터 영속성)
+    volumes:
+      - ./output:/app/output
+      - ./logs:/app/logs
+    
+    # 환경변수
+    environment:
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - CUSTOM_LLM_API_KEY=${CUSTOM_LLM_API_KEY:-}
+      - PYTHONPATH=/app
+    
+    # 재시작 정책 (중단 시 자동 재시작)
+    restart: unless-stopped
+    
+    # 로그 설정
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
